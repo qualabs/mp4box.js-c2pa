@@ -1,3 +1,14 @@
+function concatChunks(chunks) {
+  var total = chunks.reduce(function (n, c) { return n + c.length; }, 0);
+  var out = new Uint8Array(total);
+  var pos = 0;
+  for (var i = 0; i < chunks.length; i++) {
+    out.set(chunks[i], pos);
+    pos += chunks[i].length;
+  }
+  return out;
+}
+
 function createLoadBar(parent, label, id, fileobj, finalizeUI) {
   var loadbar = $('<div></div>');
   loadbar.css('clear', 'both');
@@ -143,6 +154,7 @@ function parseFile(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) 
   var startDate = new Date();
 
   fileobj.mp4boxfile = MP4Box.createFile(false);
+  fileobj.chunks = [];
 
   fileobj.mp4boxfile.onError = function (module, msg) {
     throw new Error('Failed to parse ISOBMFF file: [' + module + '] ' + msg);
@@ -155,6 +167,7 @@ function parseFile(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) 
   var onparsedbuffer = function (mp4boxfileobj, buffer) {
     console.log('Appending buffer with offset ' + offset);
     buffer.fileStart = offset;
+    fileobj.chunks.push(new Uint8Array(buffer.slice(0)));
     mp4boxfileobj.appendBuffer(buffer);
   };
 
@@ -174,6 +187,8 @@ function parseFile(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) 
         'Done reading file (' + fileSize + ' bytes) in ' + (new Date() - startDate) + ' ms',
       );
       fileobj.mp4boxfile.flush();
+      fileobj.buffer = concatChunks(fileobj.chunks);
+      fileobj.chunks = null;
       finalizeUI(fileobj, loadbutton, true);
       return;
     }
