@@ -29,11 +29,23 @@ const regularBuild = defineConfig({
   dts: true,
 });
 
-const build: Array<typeof iifeBuild | typeof regularBuild> = [];
+const c2paDemoBuild = defineConfig({
+  entry: { 'c2pa.engine': 'demo/c2pa/engine.js' },
+  outDir: 'demo/c2pa',
+  target: 'es2017',
+  format: ['iife'],
+  globalName: 'C2PA',
+  sourcemap: true,
+  minify: true,
+  dts: false,
+  clean: false,
+});
+
+const build: Array<typeof iifeBuild | typeof regularBuild | typeof c2paDemoBuild> = [];
 if (PUBLISH_TO_NPM) {
   build.push(regularBuild);
 } else {
-  build.push(iifeBuild, regularBuild);
+  build.push(iifeBuild, regularBuild, c2paDemoBuild);
 }
 
 export default build;
