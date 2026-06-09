@@ -167,7 +167,7 @@ function parseFile(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) 
   var onparsedbuffer = function (mp4boxfileobj, buffer) {
     console.log('Appending buffer with offset ' + offset);
     buffer.fileStart = offset;
-    fileobj.chunks.push(new Uint8Array(buffer.slice(0)));
+    fileobj.chunks.push(new Uint8Array(buffer));
     mp4boxfileobj.appendBuffer(buffer);
   };
 
@@ -212,12 +212,14 @@ function httpload(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) {
   var nextStart = 0;
 
   fileobj.mp4boxfile = MP4Box.createFile(false);
+  fileobj.chunks = [];
 
   downloader.setCallback(function (response, end, error) {
     if (response) {
       progressbar.progressbar({
         value: Math.ceil((100 * downloader.chunkStart) / downloader.totalLength),
       });
+      fileobj.chunks.push(new Uint8Array(response));
       fileobj.mp4boxfile.appendBuffer(response);
       nextStart += chunkSize;
     }
@@ -231,6 +233,8 @@ function httpload(fileobj, progressbar, progresslabel, loadbutton, finalizeUI) {
           ' ms',
       );
       fileobj.mp4boxfile.flush();
+      fileobj.buffer = concatChunks(fileobj.chunks);
+      fileobj.chunks = null;
       finalizeUI(fileobj, loadbutton, true);
     } else {
       downloader.setChunkStart(nextStart);
