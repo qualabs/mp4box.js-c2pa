@@ -131,14 +131,23 @@ export class ItemContentIDPropertyBox extends UUIDBox {
   }
 }
 
-// C2PA (C2PA spec / ISO 19566-5) — Manifest Store carried in a uuid (user-extension) box
-export class C2PAManifestStoreBox extends UUIDBox {
-  static uuid = 'd8fec3d61b0e483c92975828877ec481' as const;
-  box_name = 'C2PAManifestStoreBox' as const;
-
+// C2PA (C2PA spec / ISO 19566-5) — Manifest Store carried in a uuid (user-extension) box.
+// Internal base shared by both C2PA manifest UUIDs; not exported, so it is not registered.
+class C2PAManifestStoreBoxBase extends UUIDBox {
   manifest_store: Uint8Array;
 
   parse(stream: MultiBufferStream): void {
     this.manifest_store = stream.readUint8Array(this.size - this.hdr_size);
   }
+}
+
+export class C2PAManifestStoreBox extends C2PAManifestStoreBoxBase {
+  static uuid = 'd8fec3d61b0e483c92975828877ec481' as const;
+  box_name = 'C2PAManifestStoreBox' as const;
+}
+
+// Alternate C2PA manifest UUID, also accepted by @svta/cml-c2pa's isC2paUuid()
+export class C2PALegacyManifestStoreBox extends C2PAManifestStoreBoxBase {
+  static uuid = 'd8fec3d61a964f32a0f6f3ecf96c10ea' as const;
+  box_name = 'C2PALegacyManifestStoreBox' as const;
 }
