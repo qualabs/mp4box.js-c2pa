@@ -130,3 +130,15 @@ export class ItemContentIDPropertyBox extends UUIDBox {
     this.content_id = stream.readCString();
   }
 }
+
+// C2PA (C2PA spec / ISO 19566-5) — Manifest Store carried in a uuid (user-extension) box
+export class C2PAManifestStoreBox extends UUIDBox {
+  static uuid = 'd8fec3d61b0e483c92975828877ec481' as const;
+  box_name = 'C2PAManifestStoreBox' as const;
+
+  manifest_store: Uint8Array;
+
+  parse(stream: MultiBufferStream): void {
+    this.manifest_store = stream.readUint8Array(this.size - this.hdr_size);
+  }
+}
