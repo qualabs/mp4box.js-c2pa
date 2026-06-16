@@ -1,5 +1,5 @@
 import { createFile, MP4BoxBuffer } from '../entries/all';
-import { C2PALegacyManifestStoreBox, C2PAManifestStoreBox } from '../src/boxes/uuid';
+import { C2PAAlternateManifestStoreBox, C2PAManifestStoreBox } from '../src/boxes/uuid';
 import { loadAndGetInfo } from './common';
 
 describe('C2PA boxes', () => {
@@ -35,9 +35,9 @@ describe('C2PA boxes', () => {
     mp4.appendBuffer(MP4BoxBuffer.fromArrayBuffer(bytes.buffer, 0), true);
     mp4.flush();
 
-    const box = mp4.boxes.find(b => b instanceof C2PALegacyManifestStoreBox);
+    const box = mp4.boxes.find(b => b instanceof C2PAAlternateManifestStoreBox);
     expect(box).toBeDefined();
-    expect(box?.box_name).toBe('C2PALegacyManifestStoreBox');
+    expect(box?.box_name).toBe('C2PAAlternateManifestStoreBox');
     expect(box?.has_unparsed_data).toBeFalsy();
     expect(Array.from(box?.manifest_store ?? [])).toEqual(payload);
   });

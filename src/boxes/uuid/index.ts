@@ -147,7 +147,7 @@ export class C2PAManifestStoreBox extends C2PAManifestStoreBoxBase {
 }
 
 // Alternate C2PA manifest UUID, also accepted by @svta/cml-c2pa's isC2paUuid()
-export class C2PALegacyManifestStoreBox extends C2PAManifestStoreBoxBase {
+export class C2PAAlternateManifestStoreBox extends C2PAManifestStoreBoxBase {
   static uuid = 'd8fec3d61a964f32a0f6f3ecf96c10ea' as const;
-  box_name = 'C2PALegacyManifestStoreBox' as const;
+  box_name = 'C2PAAlternateManifestStoreBox' as const;
 }
